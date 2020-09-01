@@ -1,0 +1,39 @@
+#include<iostream>
+using namespace std;
+#include<stdlib.h>
+#include<time.h>
+struct people{int name;bool identifier;int vote; 
+};
+void getidentifier(int number,people redandblack[])
+{
+	int a[100],j;
+	for(int i=1;i<=number;i++)
+	{
+		a[i]=1;
+	}
+	srand((unsigned)time(NULL));
+	for(int i=1;i<=number;i++)
+	{
+		j=rand();
+		j=j%(number-1+1)+1;
+		if(a[j]==0){i=i-1;continue;}
+		else {if(j%2==1)redandblack[j].identifier=1;
+				else {redandblack[j].identifier=0;}
+				cout<<j;a[j]=0;
+			 }
+	}
+}
+int main()
+{
+	int number,blacknumber,rednumber;
+	people redandblack[100];
+	cout<<"please input a number for the number of people:"; 
+	cin>>number;
+	blacknumber=number/2;rednumber=number-blacknumber;
+	for(int i=1;i<=number;i++)                     //为每个人取编号 ,为方便理解。只用1到n号元素，0号不用 
+	{
+		redandblack[i].name=i;
+	}
+	getidentifier(number,redandblack);
+	return 0;
+}

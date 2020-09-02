@@ -1,10 +1,11 @@
 #include<iostream>
+#include<string>
 using namespace std;
 #include<stdlib.h>
 #include<time.h>
-struct people{int name;bool identifier;int vote; 
-};
-void getidentifier(int number,people redandblack[])
+struct people{int name;bool identifier;int vote; string position;
+}redandblack[20];
+void getidentifier(int number)
 {
 	int a[100],j;
 	for(int i=1;i<=number;i++)
@@ -19,21 +20,63 @@ void getidentifier(int number,people redandblack[])
 		if(a[j]==0){i=i-1;continue;}
 		else {if(j%2==1)redandblack[j].identifier=1;
 				else {redandblack[j].identifier=0;}
-				cout<<j;a[j]=0;
+				cout<<j<<' '<<redandblack[j].identifier<<endl;a[j]=0;
 			 }
-	}
+	}	
 }
 int main()
 {
-	int number,blacknumber,rednumber;
-	people redandblack[100];
-	cout<<"please input a number for the number of people:"; 
+	int number,blacknumber,rednumber,n=0,num;               //n表示得到最高票数的有几人 ,num记录村长的编号 
+	cout<<"please input a value for the number of player:"; 
 	cin>>number;
-	blacknumber=number/2;rednumber=number-blacknumber;
+	blacknumber=number/2;rednumber=number-blacknumber;//算出红黑玩家各有多少人 
 	for(int i=1;i<=number;i++)                     //为每个人取编号 ,为方便理解。只用1到n号元素，0号不用 
 	{
 		redandblack[i].name=i;
 	}
-	getidentifier(number,redandblack);
+
+	getidentifier(number);//决定每个人的身份 ,1=红，0=黑 
+	//for(int i=1;i<=number;i++)        //把每个人的票数置0 
+	//{
+	//	redandblack[i].vote=0;
+	//}
+	cout<<"第一天："<<endl<<"请按照顺序依次发言"<<endl; 
+	for(int i=1;i<=number;i++)
+	{
+		string speak[20];
+		cout<<i<<"号玩家发言：";
+		cin>>speak[i];
+	}
+	cout<<"发言结束,请按照顺序依次投票 "<<endl;
+	while(n!=1)
+	{
+		for(int j=1;j<=number;j++)        //把每个人的票数置0 
+		{
+		redandblack[j].vote=0;
+		}
+	for(int i=1;i<=number;i++)            //开始投票 
+	{
+
+		int name;
+		cout<<i<<"号玩家投票：";
+		cin>>name;redandblack[name].vote++;
+	}
+	 for(int i=1,max=redandblack[number].vote;i<=number;i++)           //得出最多的票数
+	 {
+		if(max>redandblack[i].vote);
+		else max=redandblack[i].vote;
+		if(i==number)
+		{
+			for(int j=1;j<=number;j++)
+			{
+				if(max==redandblack[j].vote){n++;num=j;}
+			}//得出拥有最高票数的有几人 
+			if(n==1){redandblack[num].position="村长";cout<<num<<"号玩家为村长";}
+			else {cout<<"有两位或多位最高票数者，请重新投票"<<endl;n=0;} 
+		}
+	 }
+	}
+	//到此以选出村长
+	 
 	return 0;
 }

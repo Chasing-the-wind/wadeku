@@ -3,10 +3,11 @@
 using namespace std;
 #include<stdlib.h>
 #include<time.h>
-struct people{int name;bool identifier;int vote; string position;
+struct people{float holdvote;bool identifier;bool eye;float vote; string position;
 }redandblack[20];
 void getidentifier(int number)
 {
+	cout<<"给每位玩家随机发身份牌(1代表红牌，0代表黑牌)"<<endl;//
 	int a[100],j;
 	for(int i=1;i<=number;i++)
 	{
@@ -20,37 +21,33 @@ void getidentifier(int number)
 		if(a[j]==0){i=i-1;continue;}
 		else {if(j%2==1)redandblack[j].identifier=1;
 				else {redandblack[j].identifier=0;}
-				cout<<j<<' '<<redandblack[j].identifier<<endl;a[j]=0;
+				cout<<j<<"号玩家的身份："<<redandblack[j].identifier<<endl;a[j]=0;
 			 }
 	}	
 }
 int main()
 {
-	int number,blacknumber,rednumber,n=0,num;               //n表示得到最高票数的有几人 ,num记录村长的编号 
-	cout<<"please input a value for the number of player:"; 
+	int number,blacknumber,n=0,rednumber,num,nummax=0,a[20];               //n表示拥有最高票数的人数，num记录村长的编号 ,a[20]储存得到最高票数的编号 ,nummax表示所得票数最高的人的编号 
+	string speak;                                             //speak记录每轮玩家的发言 
+	float max;                                                //nummax表示最高票数是多少 
+	cout<<"请输入玩家的人数:"; 
 	cin>>number;
 	blacknumber=number/2;rednumber=number-blacknumber;//算出红黑玩家各有多少人 
-	for(int i=1;i<=number;i++)                     //为每个人取编号 ,为方便理解。只用1到n号元素，0号不用 
+	for(int i=1;i<=number;i++)                     //把每个人持有的票数置1
 	{
-		redandblack[i].name=i;
+		redandblack[i].holdvote=1;
 	}
 
-	getidentifier(number);//决定每个人的身份 ,1=红，0=黑 
-	//for(int i=1;i<=number;i++)        //把每个人的票数置0 
-	//{
-	//	redandblack[i].vote=0;
-	//}
-	cout<<"第一天："<<endl<<"请按照顺序依次发言"<<endl; 
+	getidentifier(number);//决定每个人的身份 ,1=红牌，0=黑牌 
+	cout<<"第一天："<<endl<<"请发言"<<endl; 
 	for(int i=1;i<=number;i++)
 	{
-		string speak[20];
 		cout<<i<<"号玩家发言：";
-		cin>>speak[i];
+		cin>>speak;
 	}
-	cout<<"发言结束,请按照顺序依次投票 "<<endl;
-	while(n!=1)
-	{
-		for(int j=1;j<=number;j++)        //把每个人的票数置0 
+	cout<<"发言结束,请投票 "<<endl;
+
+		for(int j=1;j<=number;j++)        //把每个人得到的票数置0 
 		{
 		redandblack[j].vote=0;
 		}
@@ -59,24 +56,159 @@ int main()
 
 		int name;
 		cout<<i<<"号玩家投票：";
-		cin>>name;redandblack[name].vote++;
+		cin>>name;redandblack[name].vote=redandblack[name].vote+redandblack[i].holdvote;
 	}
-	 for(int i=1,max=redandblack[number].vote;i<=number;i++)           //得出最多的票数
-	 {
+	max=redandblack[number].vote;
+	 for(int i=1;i<=number;i++)           //得出最多的票数
+	{
 		if(max>redandblack[i].vote);
 		else max=redandblack[i].vote;
 		if(i==number)
 		{
 			for(int j=1;j<=number;j++)
 			{
-				if(max==redandblack[j].vote){n++;num=j;}
+				if(max==redandblack[j].vote){n++;num=j;a[n]=j;}
 			}//得出拥有最高票数的有几人 
-			if(n==1){redandblack[num].position="村长";cout<<num<<"号玩家为村长";}
-			else {cout<<"有两位或多位最高票数者，请重新投票"<<endl;n=0;} 
-		}
-	 }
+			if(n==1){
+						redandblack[num].position="村长";cout<<num<<"号玩家为村长"<<endl;
+						if(number%2==1)redandblack[num].holdvote=0.5;else redandblack[num].holdvote=1.5;cout<<"此时村长所持票数:"<<redandblack[num].holdvote<<endl; 
+					}
+		}	
 	}
-	//到此以选出村长
-	 
-	return 0;
+			while(n!=1)//当n大于1时再次进行发言直到选出村长 
+			{
+				int copyn=n;
+				n=0;
+				cout<<"有多个最高票数者，请重新发言投票" <<endl;
+				for(int j=1;j<=copyn;j++)
+				{
+					cout<<a[j]<<"号玩家再次发言:";
+					cin>>speak;
+				}
+				cout<<"发言结束,请投票 "<<endl;
+				for(int j=1;j<=number;j++)                          //把每个人得到的票数置0 
+				{
+					redandblack[j].vote=0;
+				}
+				for(int j=1;j<=number;j++)
+				{
+					int name;
+					cout<<j<<"号玩家投票：";
+					cin>>name;redandblack[name].vote=redandblack[name].vote+redandblack[j].holdvote;
+				}
+				max=redandblack[number].vote;
+				for(int t=1;t<=copyn;t++)           //得出最多的票数
+	 			{
+				if(max>redandblack[a[t]].vote);
+				else max=redandblack[a[t]].vote;
+					if(t==copyn)
+					{
+						for(int j=1;j<=copyn;j++)
+						{
+						if(max==redandblack[a[j]].vote){n++;num=j;a[n]=j;}
+						}//得出拥有最高票数的有几人 
+						if(n==1){
+								redandblack[num].position="村长";cout<<endl<<num<<"号玩家为村长"<<endl;
+								if(number%2==1)redandblack[num].holdvote=0.5;else redandblack[num].holdvote=1.5;
+								}
+					}
+				}
+			}//到此选出哪位玩家是村长
+		int j;
+		j=rand();                            //随机进入红黑夜 
+		if(j%2==1)cout<<"今晚随机进入的是红夜"<<endl;
+		else cout<<"今晚随机进入的是黑夜"<<endl;
+		cout<<"所有玩家可以选择闭眼或睁眼（0代表睁眼，1代表闭眼）"<<endl;
+		for(int i=1,tempred=0,tempblack=0;i<=number;i++)                  //玩家选择睁眼或闭眼并判断村长所持票数 
+		{
+			int temp;          //tempred表示睁眼的红牌数，tempblack表示睁眼的黑牌数 
+			cout<<i<<"号玩家选择：";
+			cin>>temp;
+			if(redandblack[i].identifier==1&&temp==0)tempred=tempred+1;
+			if(redandblack[i].identifier==0&&temp==0)tempblack=tempblack+1;
+			if(i==number)
+			{
+				if(j%2==1&&tempred%2==0)redandblack[num].holdvote=redandblack[num].holdvote+1;cout<<"此时睁眼红牌数："<<tempred<<endl;
+				if(j%2==0&&tempblack%2==0)redandblack[num].holdvote=redandblack[num].holdvote+1;cout<<"此时睁眼黑牌数："<<tempblack<<endl; 
+				cout<<"此时村长所持票数："<<redandblack[num].holdvote<<endl;
+			}
+		}
+		cout<<"进入下一天白天"<<endl;
+		cout<<"村长决定从自己左边或右边发言（1代表从自己左边，0代表从自己右边）" ;
+		int direction;
+		cin>> direction;
+		if(direction==1)
+		{
+			if(num==1)
+			{
+				cout<<number<<"号玩家发言：";
+				cin>>speak;
+				for(int i=1;i<number;i++)
+				{
+					cout<<i<<"号玩家发言：";
+					cin>>speak; 
+				}
+			}
+			if(num!=1)
+			{
+				for(int i=1;i<=number;i++)
+				{
+					if(num-1+i-1>number)cout<<num+i-number-2<<"号玩家发言：";//当number号玩家发言后，从一号玩家开始发言。 
+					else cout<<num-1+i-1<<"号玩家发言:";
+					cin>>speak;
+				}
+			}
+		}
+		if(direction==0)
+		{
+			if(num==number)
+			{
+				cout<<1<<"号玩家发言：";
+				cin>>speak;
+				for(int i=number;i>1;i--)
+				{
+					cout<<i<<"号玩家发言：";
+					cin>>speak;
+				}
+			}
+			if(num!=number)
+			{
+				for(int i=number;i>=1;i--)
+				{
+					if(num+1+i-number<1)cout<<num+i+1<<"号玩家发言:";
+					else cout<<num+1+i-number<<"号玩家发言:"; 
+					cin>>speak;
+				}
+			}
+		}
+	cout<<"现在开始进行匿名投票选出被驱逐者"<<endl;
+			for(int j=1;j<=number;j++)                          //把每个人得到的票数置0 
+			{
+				redandblack[j].vote=0;
+			}
+			for(int j=1;j<=number;j++)
+			{
+				int name;
+				cout<<j<<"号玩家投票:";
+				cin>>name;redandblack[name].vote=redandblack[name].vote+redandblack[j].holdvote;cout<<name<<"号玩家当前票数："<<redandblack[name].vote<<endl;
+			}
+			max=redandblack[number].vote;
+	 for(int i=1;i<=number;i++)           //得出最多的票数判断谁被驱逐 
+	{
+		if(max>redandblack[i].vote);
+		else max=redandblack[i].vote;
+		if(i==number)
+		{
+			cout<<"最高票数为："<<max<<endl;
+			for(int j=1;j<=number;j++)
+			{
+				if(max==redandblack[j].vote)nummax=j;
+			}//得出最高票数的人的编号 
+			if(max!=redandblack[num].vote)                   //被驱逐的人不是村长时 
+			{
+				cout<<"被驱逐的人是"<<nummax<<"号"<<endl; 
+			}
+		}	
+	}
+return 0;
 }
